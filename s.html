@@ -1,5 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>
+  "use strict";
+  const PROVIDER = "google";
+  const INTERNAL = [/\.int\.ec\.gc\.ca$/i, /^intranet\./i, /\.cloud-nuage\.gc\.ca$/i];
+  const ICON_QUEUE = [];
+  const GROUPS = [
+    { label: "Google", links: [{ label: "Search", url: "https://google.ca" }, { label: "Gmail", url: "https://mail.google.com/mail/ca" }, { label: "Calendar", url: "https://calendar.google.com/" }, { label: "Translate", url: "https://translate.google.com/#" }, { label: "Maps", url: "https://maps.google.ca/#" }, { label: "Drive", url: "https://drive.google.com/" }, { label: "Docs", url: "https://docs.google.com/" }, { label: "Keep", url: "https://drive.google.com/keep" }, { label: "Chat", url: "https://mail.google.com/chat/u/0/?hl=en-GB#chat/welcome" }, { label: "Meet", url: "https://meet.google.com/" }] },
+    { label: "Finance", links: [{ label: "TD", url: "https://easyweb.td.com/" }, { label: "Scotiabank", url: "https://secure.scotiabank.com/accounts" }, { label: "Enbridge", url: "https://myaccount.enbridgegas.com/" }, { label: "Alectra", url: "https://myaccount.alectrautilities.com/app/login.jsp" }, { label: "BelairDirect", url: "https://apps.belairdirect.com/cc/?language=en&province=ON" }, { label: "TekSavvy", url: "https://myaccount.teksavvy.com/" }, { label: "Koodo", url: "https://www.koodomobile.com/my-account/overview?INTCMP=KMNew_NavMenu_SelfServe" }, { label: "CanadaLife", url: "https://www.canadalife.com/sign-in.html" }] },
+    { label: "News", links: [{ label: "CNN", url: "https://www.cnn.com" }, { label: "BBC", url: "https://www.bbc.com/news/world" }, { label: "CBC", url: "https://www.cbc.ca/news/" }, { label: "CBC Hamilton", url: "https://www.cbc.ca/hamilton/" }, { label: "The Spec", url: "https://www.pressdisplay.com/pressdisplay/services/urlauthentication.ashx?service=thespecnie.pressreader.com&serviceurl=http://thespecnie.pressreader.com" }, { label: "CTV", url: "https://www.ctvnews.ca/canada" }, { label: "Ottawa Citizen", url: "https://ottawacitizen.com/" }, { label: "Hill Times", url: "https://www.hilltimes.com/" }, { label: "Unrigged", url: "https://www.unrigged.ca/" }, { label: "404 Media", url: "https://www.404media.co/" }, { label: "Weather", url: "https://weather.gc.ca/en/location/index.html?coords=43.258,-79.869" }] },
+    { label: "Social", links: [{ label: "Bluesky", url: "https://bsky.app/" }, { label: "deck.blue", url: "https://deck.blue/" }, { label: "Reddit", url: "https://reddit.com" }, { label: "Discord", url: "https://discordapp.com/channels/@me" }, { label: "HackerNews", url: "https://news.ycombinator.com/" }, { label: "Scryfall", url: "https://scryfall.com/" }, { label: "TappedOut", url: "https://tappedout.net/users/ReasonableMan/mtg-decks/" }, { label: "Moxfield", url: "https://www.moxfield.com/" }] },
+    { label: "Tech", links: [{ label: "Claude", url: "https://claude.ai/new" }, { label: "Gemini", url: "https://gemini.google.com/app" }, { label: "ChatGPT", url: "https://chat.openai.com/" }, { label: "Dreamhost", url: "https://panel.dreamhost.com/" }, { label: "DynDNS", url: "https://account.dyn.com/dns/dyndns/" }, { label: "CloudConvert", url: "https://cloudconvert.org/" }, { label: "StackEdit", url: "https://stackedit.io/" }, { label: "Dell (m15)", url: "https://www.dell.com/support/product-details/en-ca/product/alienware-m15-r3-laptop/resources/search" }, { label: "Dell (r16)", url: "https://www.dell.com/support/product-details/en-ca/product/alienware-aurora-r16-desktop/overview" }, { label: "DeepL", url: "https://www.deepl.com/en/translator/l/en/fr" }] },
+    { label: "Life", links: [{ label: "Joslins", url: "https://clients.mindbodyonline.com/classic/ws?studioid=148871&stype=-7&sView=week&sLoc=0" }, { label: "Alchemy", url: "https://alchemycrossfit.sites.zenplanner.com/" }, { label: "SoBi", url: "https://app.socialbicycles.com/users/sign_in" }, { label: "Presto", url: "https://www.prestocard.ca/en/sign-in" }, { label: "HPL", url: "https://hpl.bibliocommons.com/user/login" }, { label: "Amazon", url: "https://amazon.ca" }, { label: "Costco", url: "https://www.costco.ca/s?langId=-24&keyword=magic" }, { label: "DekuDeals", url: "https://www.dekudeals.com/" }, { label: "OntarioLearn", url: "https://ontariolearn.desire2learn.com/d2l/home" }] },
+    { label: "Media", links: [{ label: "Spotify", url: "https://www.spotify.com/" }, { label: "YouTube", url: "https://youtube.com" }, { label: "Netflix", url: "https://www.netflix.com/WiHome" }, { label: "Prime", url: "https://www.primevideo.com/" }, { label: "Patreon", url: "https://www.patreon.com/settings/memberships" }] },
+    { label: "Work", links: [{ label: "EnviroTel", url: "https://intranet.ec.gc.ca/Phone/Search-Recherche.aspx" }, { label: "GitHub", url: "https://github.com/ramp4-pcar4/" }, { label: "Projects", url: "https://github.com/orgs/ramp4-pcar4/projects/24/views/2" }, { label: "Slack", url: "https://ecccwebmapping.slack.com" }, { label: "Azure", url: "https://portal.azure.com/" }, { label: "MSDN", url: "https://my.visualstudio.com/Downloads" }, { label: "Esri", url: "https://www.esri.com/en-us/my-esri-login" }, { label: "ADO", url: "https://ecollab.ncr.int.ec.gc.ca/projects/ppgu-swpp/Lists/ADO%20Deployment%20Calendar/ADO%20Calendar.aspx" }, { label: "DevOps Repos", url: "https://tfs.int.ec.gc.ca/tfs/DC/BeSD_Geospatial_Data/_versionControl" }, { label: "DevOps Releases", url: "https://tfs.int.ec.gc.ca/tfs/DC/Release/_release?_a=releases&view=all&path=%5CBeSD_Geospatial_Data" }, { label: "MyGCHR", url: "https://mesrhgc-mygchr.spac-pspc.gc.ca/GCHRPRD/signon.html" }, { label: "MyGCPay", url: "https://mapayegc-mygcpay.tpsgc-pwgsc.gc.ca/en/mygcpay" }, { label: "CANChat", url: "https://canchat.gc.ca/" }, { label: "MAPLE", url: "https://maple-dev.np.ec.cloud-nuage.gc.ca/" }] },
+    { label: "Local", links: [{ label: "DIR-X1870", url: "http://192.168.0.1/" }, { label: "Jellyfin", url: "http://melchior:8096/" }, { label: "Keep Talking", url: "https://keeptalking.homelinux.net/" }] }
+  ];
+</script>
 
 <head>
   <meta charset="UTF-8">
@@ -12,12 +29,12 @@
       --surface: #151515;
       --border: #272727;
       --text: #d8d8d8;
-      --text-dim: #9CDCFE;
+      --text-dim: #9cdcfe;
       --accent: #f984b9;
-      --accent-glow: rgba(249, 132, 185, .12);
+      --accent-glow: rgba(249, 132, 185, 0.12);
       --font: "Courier New", Courier, monospace;
       --radius: 5px;
-      --gap: .45rem;
+      --gap: 0.45rem;
       --col-gap: 3.5vw;
     }
 
@@ -26,20 +43,20 @@
     *::after {
       box-sizing: border-box;
       margin: 0;
-      padding: 0
+      padding: 0;
     }
 
     html {
       font-size: clamp(16px, 1.2vw, 20px);
-      -webkit-text-size-adjust: 100%
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font);
       min-height: 100vh;
       padding: clamp(1.2rem, 2.5vw, 3rem) clamp(1rem, 3vw, 3.5rem) 3rem;
+      background: var(--bg);
+      color: var(--text);
+      font: 1rem/1.4 var(--font);
     }
 
     header {
@@ -53,43 +70,43 @@
 
     #clock {
       font-size: clamp(1.6rem, 3vw, 2.8rem);
-      font-weight: bold;
-      letter-spacing: -.02em;
+      font-weight: 700;
+      letter-spacing: -0.02em;
       color: var(--accent);
       line-height: 1;
       font-variant-numeric: tabular-nums;
     }
 
     #date {
-      font-size: clamp(.68rem, .75vw, .82rem);
+      font-size: clamp(0.68rem, 0.75vw, 0.82rem);
       color: var(--text-dim);
-      letter-spacing: .1em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
     }
 
     #categories {
       display: flex;
       gap: var(--col-gap);
-      align-items: flex-start
+      align-items: flex-start;
     }
 
     .col {
       flex: 1 1 0;
       display: flex;
       flex-direction: column;
-      gap: 1.8rem
+      gap: 1.8rem;
     }
 
     .cat-header {
       display: flex;
       align-items: center;
-      gap: .7rem;
-      margin-bottom: .55rem
+      gap: 0.7rem;
+      margin-bottom: 0.55rem;
     }
 
     .cat-label {
-      font-size: .70rem;
-      letter-spacing: .18em;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--text-dim);
       white-space: nowrap;
@@ -99,50 +116,53 @@
     .cat-rule {
       flex: 1;
       height: 1px;
-      background: var(--border)
+      background: var(--border);
     }
 
     .links {
       display: flex;
       flex-wrap: wrap;
       gap: var(--gap);
-      list-style: none
+      list-style: none;
     }
 
-    a.chip {
+    .chip,
+    .multi-chip>a {
       display: inline-flex;
       align-items: center;
-      gap: .4rem;
-      padding: .28rem .62rem;
+      gap: 0.4rem;
+      padding: 0.28rem 0.62rem;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       color: var(--text);
       text-decoration: none;
       font-family: var(--font);
-      font-size: clamp(.8rem, .85vw, .92rem);
+      font-size: clamp(0.8rem, 0.85vw, 0.92rem);
       line-height: 1;
       transition: color 100ms, border-color 100ms, background 100ms;
       white-space: nowrap;
     }
 
-    a.chip:hover {
+    .chip:hover,
+    .multi-chip>a:hover {
       color: var(--accent);
       border-color: var(--accent);
-      background: var(--accent-glow)
+      background: var(--accent-glow);
     }
 
-    a.chip:focus-visible {
+    .chip:focus-visible,
+    .multi-chip>a:focus-visible {
       outline: 2px solid var(--accent);
-      outline-offset: 2px
+      outline-offset: 2px;
     }
 
-    a.chip img,
+    .chip img,
     .multi-chip__icon img {
       width: 16px;
       height: 16px;
       flex-shrink: 0;
-      display: block
+      display: block;
     }
 
     .multi-chip {
@@ -157,86 +177,63 @@
     .multi-chip__icon {
       display: flex;
       align-items: center;
-      padding: .28rem .48rem;
+      padding: 0.28rem 0.48rem;
       border-right: 1px solid var(--border);
       pointer-events: none;
     }
 
-    .multi-chip a {
-      display: inline-flex;
-      align-items: center;
-      padding: .28rem .52rem;
-      color: var(--text);
-      text-decoration: none;
-      font-family: var(--font);
-      font-size: clamp(.8rem, .85vw, .92rem);
-      line-height: 1;
-      transition: color 100ms, background 100ms;
-      white-space: nowrap;
+    .multi-chip>a {
+      padding: 0.28rem 0.52rem;
     }
 
-    .multi-chip a+a {
-      border-left: 1px solid var(--border)
+    .multi-chip>a+a {
+      border-left: 1px solid var(--border);
     }
 
-    .multi-chip a:hover {
-      color: var(--accent);
-      background: var(--accent-glow)
-    }
-
-    .multi-chip a:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: -2px
-    }
-
-    @media (max-width:680px) {
+    @media (max-width: 680px) {
       body {
-        padding: 1.2rem .9rem 2rem
+        padding: 1.2rem 0.9rem 2rem;
       }
 
       #clock {
-        font-size: 1.9rem
+        font-size: 1.9rem;
       }
 
       #date {
-        font-size: .72rem
+        font-size: 0.72rem;
       }
 
       header {
-        margin-bottom: 1.6rem
+        margin-bottom: 1.6rem;
       }
 
       #categories {
         flex-direction: column;
-        gap: 1.4rem
+        gap: 1.4rem;
       }
 
       .col {
-        gap: 1.4rem
+        gap: 1.4rem;
       }
 
-      a.chip {
+      .chip,
+      .multi-chip>a {
         font-size: 1rem;
-        padding: .42rem .75rem
+        padding: 0.42rem 0.75rem;
       }
 
-      a.chip img,
+      .chip img,
       .multi-chip__icon img {
         width: 15px;
-        height: 15px
-      }
-
-      .multi-chip a {
-        font-size: 1rem;
-        padding: .42rem .65rem
+        height: 15px;
       }
     }
 
-    @media (prefers-reduced-motion:reduce) {
+    @media (prefers-reduced-motion: reduce) {
 
-      a.chip,
-      .multi-chip a {
-        transition: none
+      .chip,
+      .multi-chip>a {
+        transition: none;
       }
     }
   </style>
@@ -254,13 +251,6 @@
     </main>
   </div>
   <script>
-    "use strict";
-
-    // "google" | "duckduckgo" | "direct"
-    const PROVIDER = "google";
-    // Domains the favicon service can't reach; these try the site directly.
-    const INTERNAL = [/\.int\.ec\.gc\.ca$/i, /^intranet\./i, /\.cloud-nuage\.gc\.ca$/i];
-
     function providerUrl(host) {
       if (PROVIDER === "duckduckgo") return `https://icons.duckduckgo.com/ip3/${host}.ico`;
       if (PROVIDER === "direct") return `https://${host}/favicon.ico`;
@@ -277,263 +267,104 @@
         `<text x="8" y="8.5" font-family="Courier New,monospace" font-size="11" ` +
         `font-weight="700" fill="hsl(${h},72%,77%)" text-anchor="middle" ` +
         `dominant-baseline="central">${ch}</text></svg>`;
-      return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+      return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
     }
 
     function iconChain(url, label) {
       let host = "";
       try { host = new URL(url).hostname; } catch { }
       const chain = [];
-      if (host)
-        chain.push(INTERNAL.some(re => re.test(host)) ? `https://${host}/favicon.ico` : providerUrl(host));
+      if (host) chain.push(INTERNAL.some(re => re.test(host)) ? `https://${host}/favicon.ico` : providerUrl(host));
       chain.push(monogram(label));
       return chain;
     }
 
-    // Icons are shown as monograms immediately (no network). After load, real
-    // favicons are fetched one at a time to avoid bursting requests through
-    // network security appliances that stall on concurrent external calls.
-    const ICON_QUEUE = [];
-
     function attachIcon(img, chain) {
-      img.src = chain[chain.length - 1]; // monogram: instant, no network
+      img.src = chain[chain.length - 1];
       if (chain.length > 1) ICON_QUEUE.push({ img, chain: chain.slice(0, -1) });
+    }
+
+    function create(tag, props = {}, parent) {
+      const el = document.createElement(tag);
+      Object.entries(props).forEach(([key, value]) => {
+        if (value == null) return;
+        if (key === "className") el.className = value;
+        else if (key === "textContent") el.textContent = value;
+        else el.setAttribute(key, value);
+      });
+      if (parent) parent.appendChild(el);
+      return el;
+    }
+
+    function renderGroup(group, target, autoCol) {
+      const labelId = `cat-${group.label.replace(/\s+/g, "-").toLowerCase()}`;
+      const section = create("section", { className: "category", "aria-labelledby": labelId }, target);
+      const header = create("div", { className: "cat-header", "aria-hidden": "true" }, section);
+      create("span", { className: "cat-label", id: labelId, textContent: group.label }, header);
+      create("div", { className: "cat-rule", role: "presentation" }, header);
+
+      const list = create("ul", { className: "links", role: "list" }, section);
+      group.links.forEach(item => {
+        const li = create("li", {}, list);
+        if (item.links) {
+          const wrap = create("div", { className: "multi-chip", role: "group", "aria-label": item.label }, li);
+          const icon = create("span", { className: "multi-chip__icon", "aria-hidden": "true" }, wrap);
+          const img = create("img", { alt: "" }, icon);
+          const firstUrl = item.links[0] ? item.links[0].url : "";
+          attachIcon(img, iconChain(firstUrl, item.label));
+          item.links.forEach(sub => create("a", { href: sub.url, textContent: sub.label, "aria-label": `${item.label} — ${sub.label}` }, wrap));
+        } else {
+          const link = create("a", { href: item.url, className: "chip" }, li);
+          const img = create("img", { alt: "", "aria-hidden": "true" }, link);
+          attachIcon(img, iconChain(item.url, item.label));
+          create("span", { textContent: item.label }, link);
+        }
+      });
+
+      return autoCol;
     }
 
     window.addEventListener("load", () => {
       let i = 0;
-      (function next() {
+      const next = () => {
         if (i >= ICON_QUEUE.length) return;
         const { img, chain } = ICON_QUEUE[i++];
         const fallback = img.src;
-        let ci = 0;
+        let tries = 0;
         img.onerror = () => {
-          if (++ci < chain.length) img.src = chain[ci];
+          if (++tries < chain.length) img.src = chain[tries];
           else { img.src = fallback; img.onerror = null; }
         };
         img.src = chain[0];
         setTimeout(next, 15);
-      })();
+      };
+      next();
     });
-
-    const GROUPS = [
-      {
-        label: "Google",
-        links: [
-          { label: "Search", url: "https://google.ca" },
-          { label: "Gmail", url: "https://mail.google.com/mail/ca" },
-          { label: "Calendar", url: "https://calendar.google.com/" },
-          { label: "Translate", url: "https://translate.google.com/#" },
-          { label: "Maps", url: "https://maps.google.ca/#" },
-          { label: "Drive", url: "https://drive.google.com/" },
-          { label: "Docs", url: "https://docs.google.com/" },
-          { label: "Keep", url: "https://drive.google.com/keep" },
-          { label: "Chat", url: "https://mail.google.com/chat/u/0/?hl=en-GB#chat/welcome" },
-          { label: "Meet", url: "https://meet.google.com/" },
-        ]
-      },
-      {
-        label: "Finance",
-        links: [
-          { label: "TD", url: "https://easyweb.td.com/" },
-          { label: "Scotiabank", url: "https://secure.scotiabank.com/accounts" },
-          { label: "Enbridge", url: "https://myaccount.enbridgegas.com/" },
-          { label: "Alectra", url: "https://myaccount.alectrautilities.com/app/login.jsp" },
-          { label: "BelairDirect", url: "https://apps.belairdirect.com/cc/?language=en&province=ON" },
-          { label: "TekSavvy", url: "https://myaccount.teksavvy.com/" },
-          { label: "Koodo", url: "https://www.koodomobile.com/my-account/overview?INTCMP=KMNew_NavMenu_SelfServe" },
-          { label: "CanadaLife", url: "https://www.canadalife.com/sign-in.html" },
-        ]
-      },
-      {
-        label: "News",
-        links: [
-          { label: "CNN", url: "https://www.cnn.com" },
-          { label: "BBC", url: "https://www.bbc.com/news/world" },
-          { label: "CBC", url: "https://www.cbc.ca/news/" },
-          { label: "CBC Hamilton", url: "https://www.cbc.ca/hamilton/" },
-          { label: "The Spec", url: "https://www.pressdisplay.com/pressdisplay/services/urlauthentication.ashx?service=thespecnie.pressreader.com&serviceurl=http://thespecnie.pressreader.com" },
-          { label: "CTV", url: "https://www.ctvnews.ca/canada" },
-          { label: "Ottawa Citizen", url: "https://ottawacitizen.com/" },
-          { label: "Hill Times", url: "https://www.hilltimes.com/" },
-          { label: "Unrigged", url: "https://www.unrigged.ca/" },
-          { label: "404 Media", url: "https://www.404media.co/" },
-          { label: "Weather", url: "https://weather.gc.ca/en/location/index.html?coords=43.258,-79.869" },
-        ]
-      },
-      {
-        label: "Social",
-        links: [
-          { label: "Bluesky", url: "https://bsky.app/" },
-          { label: "deck.blue", url: "https://deck.blue/" },
-          { label: "Reddit", url: "https://reddit.com" },
-          { label: "Discord", url: "https://discordapp.com/channels/@me" },
-          { label: "HackerNews", url: "https://news.ycombinator.com/" },
-          { label: "Scryfall", url: "https://scryfall.com/" },
-          { label: "TappedOut", url: "https://tappedout.net/users/ReasonableMan/mtg-decks/" },
-          { label: "Moxfield", url: "https://www.moxfield.com/" },
-        ]
-      },
-      {
-        label: "Tech",
-        links: [
-          { label: "Claude", url: "https://claude.ai/new" },
-          { label: "Gemini", url: "https://gemini.google.com/app" },
-          { label: "ChatGPT", url: "https://chat.openai.com/" },
-          { label: "Dreamhost", url: "https://panel.dreamhost.com/" },
-          { label: "DynDNS", url: "https://account.dyn.com/dns/dyndns/" },
-          { label: "CloudConvert", url: "https://cloudconvert.org/" },
-          { label: "StackEdit", url: "https://stackedit.io/" },
-          { label: "Dell (m15)", url: "https://www.dell.com/support/product-details/en-ca/product/alienware-m15-r3-laptop/resources/search" },
-          { label: "Dell (r16)", url: "https://www.dell.com/support/product-details/en-ca/product/alienware-aurora-r16-desktop/overview" },
-          { label: "DeepL", url: "https://www.deepl.com/en/translator/l/en/fr" },
-        ]
-      },
-      {
-        label: "Life",
-        links: [
-          { label: "Joslins", url: "https://clients.mindbodyonline.com/classic/ws?studioid=148871&stype=-7&sView=week&sLoc=0" },
-          { label: "Alchemy", url: "https://alchemycrossfit.sites.zenplanner.com/" },
-          { label: "SoBi", url: "https://app.socialbicycles.com/users/sign_in" },
-          { label: "Presto", url: "https://www.prestocard.ca/en/sign-in" },
-          { label: "HPL", url: "https://hpl.bibliocommons.com/user/login" },
-          { label: "Amazon", url: "https://amazon.ca" },
-          { label: "Costco", url: "https://www.costco.ca/s?langId=-24&keyword=magic" },
-          { label: "DekuDeals", url: "https://www.dekudeals.com/" },
-          { label: "OntarioLearn", url: "https://ontariolearn.desire2learn.com/d2l/home" },
-        ]
-      },
-      {
-        label: "Media",
-        links: [
-          /*{ label: "Plex", url: "https://app.plex.tv/desktop/#!/" },*/
-          { label: "Spotify", url: "https://www.spotify.com/" },
-          { label: "YouTube", url: "https://youtube.com" },
-          { label: "Netflix", url: "https://www.netflix.com/WiHome" },
-          { label: "Prime", url: "https://www.primevideo.com/" },
-          { label: "Patreon", url: "https://www.patreon.com/settings/memberships" },
-        ]
-      },
-      {
-        label: "Work",
-        links: [
-          { label: "EnviroTel", url: "https://intranet.ec.gc.ca/Phone/Search-Recherche.aspx" },
-          { label: "GitHub", url: "https://github.com/ramp4-pcar4/" },
-          { label: "Projects", url: "https://github.com/orgs/ramp4-pcar4/projects/24/views/2" },
-          { label: "Slack", url: "https://ecccwebmapping.slack.com" },
-          { label: "Azure", url: "https://portal.azure.com/" },
-          { label: "MSDN", url: "https://my.visualstudio.com/Downloads" },
-          { label: "Esri", url: "https://www.esri.com/en-us/my-esri-login" },
-          { label: "ADO", url: "https://ecollab.ncr.int.ec.gc.ca/projects/ppgu-swpp/Lists/ADO%20Deployment%20Calendar/ADO%20Calendar.aspx" },
-          { label: "DevOps Repos", url: "https://tfs.int.ec.gc.ca/tfs/DC/BeSD_Geospatial_Data/_versionControl" },
-          { label: "DevOps Releases", url: "https://tfs.int.ec.gc.ca/tfs/DC/Release/_release?_a=releases&view=all&path=%5CBeSD_Geospatial_Data" },
-          { label: "MyGCHR", url: "https://mesrhgc-mygchr.spac-pspc.gc.ca/GCHRPRD/signon.html" },
-          { label: "MyGCPay", url: "https://mapayegc-mygcpay.tpsgc-pwgsc.gc.ca/en/mygcpay" },
-          { label: "CANChat", url: "https://canchat.gc.ca/" },
-          { label: "MAPLE", url: "https://maple-dev.np.ec.cloud-nuage.gc.ca/" },
-
-        ]
-      },
-      {
-        label: "Local",
-        links: [
-          { label: "DIR-X1870", url: "http://192.168.0.1/" },
-          { label: "Jellyfin", url: "http://192.168.0.154/" },
-          { label: "Keep Talking", url: "https://keeptalking.homelinux.net/" },
-        ]
-      },
-    ];
 
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, "0");
       const m = String(now.getMinutes()).padStart(2, "0");
       const s = String(now.getSeconds()).padStart(2, "0");
-      document.getElementById("clock").textContent = `${h}:${m}:${s}`;
-      document.getElementById("date").textContent =
-        `${now.toLocaleDateString("en-CA", { weekday: "long" })}  ` +
-        `${now.toLocaleDateString("en-CA", { month: "long" })} ${now.getDate()},  ${now.getFullYear()}`;
+      const clock = document.getElementById("clock");
+      const date = document.getElementById("date");
+      clock.textContent = `${h}:${m}:${s}`;
+      date.textContent = `${now.toLocaleDateString("en-CA", { weekday: "long" })} ${now.toLocaleDateString("en-CA", { month: "long" })} ${now.getDate()}, ${now.getFullYear()}`;
     }
+
     updateClock();
     setInterval(updateClock, 1000);
 
     const col1 = document.getElementById("col-1");
     const col2 = document.getElementById("col-2");
-    let autoCol = 1;
+    const columns = [col1, col2];
+    let autoCol = 0;
 
     GROUPS.forEach(group => {
-      const target = group.col === 1 ? col1
-        : group.col === 2 ? col2
-          : (autoCol === 1 ? col1 : col2);
-      if (!group.col) autoCol = autoCol === 1 ? 2 : 1;
-
-      const labelId = `cat-${group.label.replace(/\s+/g, "-").toLowerCase()}`;
-      const section = document.createElement("section");
-      section.className = "category";
-      section.setAttribute("aria-labelledby", labelId);
-
-      const hdr = document.createElement("div");
-      hdr.className = "cat-header";
-      hdr.setAttribute("aria-hidden", "true");
-      const lbl = document.createElement("span");
-      lbl.className = "cat-label";
-      lbl.id = labelId;
-      lbl.textContent = group.label;
-      const rule = document.createElement("div");
-      rule.className = "cat-rule";
-      rule.setAttribute("role", "presentation");
-      hdr.appendChild(lbl);
-      hdr.appendChild(rule);
-      section.appendChild(hdr);
-
-      const ul = document.createElement("ul");
-      ul.className = "links";
-      ul.setAttribute("role", "list");
-
-      group.links.forEach(item => {
-        const li = document.createElement("li");
-        if (item.links) {
-          const wrap = document.createElement("div");
-          wrap.className = "multi-chip";
-          wrap.setAttribute("role", "group");
-          wrap.setAttribute("aria-label", item.label);
-          const iconSpan = document.createElement("span");
-          iconSpan.className = "multi-chip__icon";
-          iconSpan.setAttribute("aria-hidden", "true");
-          const iconImg = document.createElement("img");
-          iconImg.alt = "";
-          attachIcon(iconImg, iconChain(item.links[0] && item.links[0].url, item.label));
-          iconSpan.appendChild(iconImg);
-          wrap.appendChild(iconSpan);
-          item.links.forEach(sub => {
-            const a = document.createElement("a");
-            a.href = sub.url;
-            a.textContent = sub.label;
-            a.setAttribute("aria-label", `${item.label} — ${sub.label}`);
-            wrap.appendChild(a);
-          });
-          li.appendChild(wrap);
-        } else {
-          const a = document.createElement("a");
-          a.href = item.url;
-          a.className = "chip";
-          const img = document.createElement("img");
-          img.alt = "";
-          img.setAttribute("aria-hidden", "true");
-          attachIcon(img, iconChain(item.url, item.label));
-          const span = document.createElement("span");
-          span.textContent = item.label;
-          a.appendChild(img);
-          a.appendChild(span);
-          li.appendChild(a);
-        }
-        ul.appendChild(li);
-      });
-
-      section.appendChild(ul);
-      target.appendChild(section);
+      const target = group.col === 1 ? col1 : group.col === 2 ? col2 : columns[autoCol % 2];
+      if (!group.col) autoCol += 1;
+      renderGroup(group, target, autoCol);
     });
   </script>
 </body>
-
 </html>
