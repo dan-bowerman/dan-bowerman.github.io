@@ -1,417 +1,459 @@
 <!DOCTYPE html>
 <html lang="en">
 <script>
-    "use strict";
-    const PROVIDER = "google";
-    const INTERNAL = [/\.int\.ec\.gc\.ca$/i, /^intranet\./i, /\.cloud-nuage\.gc\.ca$/i];
-    const ICON_QUEUE = [];
-    const GROUPS = [
-        { label: "Google", links: [{ label: "Search", url: "https://google.ca" }, { label: "Gmail", url: "https://mail.google.com/mail/ca" }, { label: "Calendar", url: "https://calendar.google.com/" }, { label: "Translate", url: "https://translate.google.com/#" }, { label: "Maps", url: "https://maps.google.ca/#", iconHost: "maps.google.com" }, { label: "Drive", url: "https://drive.google.com/" }, { label: "Docs", url: "https://docs.google.com/" }, { label: "Keep", url: "https://drive.google.com/keep", iconHost: "keep.google.com" }, { label: "Chat", url: "https://mail.google.com/chat/u/0/?hl=en-GB#chat/welcome", iconHost: "chat.google.com" }, { label: "Meet", url: "https://meet.google.com/" }] },
-        { label: "Finance", links: [{ label: "TD", url: "https://easyweb.td.com/" }, { label: "Scotiabank", url: "https://secure.scotiabank.com/accounts" }, { label: "Enbridge", url: "https://myaccount.enbridgegas.com/" }, { label: "Alectra", url: "https://myaccount.alectrautilities.com/app/login.jsp" }, { label: "BelairDirect", url: "https://apps.belairdirect.com/cc/?language=en&province=ON" }, { label: "TekSavvy", url: "https://myaccount.teksavvy.com/" }, { label: "Koodo", url: "https://www.koodomobile.com/my-account/overview?INTCMP=KMNew_NavMenu_SelfServe" }, { label: "CanadaLife", url: "https://www.canadalife.com/sign-in.html" }] },
-        { label: "News", links: [{ label: "CNN", url: "https://www.cnn.com" }, { label: "BBC", url: "https://www.bbc.com/news/world" }, { label: "CBC", url: "https://www.cbc.ca/news/" }, { label: "CBC Hamilton", url: "https://www.cbc.ca/hamilton/" }, { label: "The Spec", url: "https://www.pressdisplay.com/pressdisplay/services/urlauthentication.ashx?service=thespecnie.pressreader.com&serviceurl=http://thespecnie.pressreader.com" }, { label: "CTV", url: "https://www.ctvnews.ca/canada" }, { label: "Ottawa Citizen", url: "https://ottawacitizen.com/" }, { label: "Hill Times", url: "https://www.hilltimes.com/" }, { label: "Unrigged", url: "https://www.unrigged.ca/" }, { label: "404 Media", url: "https://www.404media.co/" }, { label: "Weather", url: "https://weather.gc.ca/en/location/index.html?coords=43.258,-79.869" }] },
-        { label: "Social", links: [{ label: "Bluesky", url: "https://bsky.app/" }, { label: "deck.blue", url: "https://deck.blue/" }, { label: "Reddit", url: "https://reddit.com" }, { label: "Discord", url: "https://discordapp.com/channels/@me" }, { label: "HackerNews", url: "https://news.ycombinator.com/" }, { label: "Scryfall", url: "https://scryfall.com/" }, { label: "TappedOut", url: "https://tappedout.net/users/ReasonableMan/mtg-decks/" }, { label: "Moxfield", url: "https://www.moxfield.com/" }] },
-        { label: "Tech", links: [{ label: "Claude", url: "https://claude.ai/new" }, { label: "Gemini", url: "https://gemini.google.com/app" }, { label: "ChatGPT", url: "https://chat.openai.com/" }, { label: "Dreamhost", url: "https://panel.dreamhost.com/" }, { label: "Cloudflare", url: "https://dash.cloudflare.com" }, { label: "DynDNS", url: "https://account.dyn.com/dns/dyndns/" }, { label: "CloudConvert", url: "https://cloudconvert.org/" }, { label: "StackEdit", url: "https://stackedit.io/" }, { label: "Dell (m15)", url: "https://www.dell.com/support/product-details/en-ca/product/alienware-m15-r3-laptop/resources/search" }, { label: "Dell (r16)", url: "https://www.dell.com/support/product-details/en-ca/product/alienware-aurora-r16-desktop/overview" }, { label: "DeepL", url: "https://www.deepl.com/en/translator/l/en/fr" }] },
-        { label: "Life", links: [{ label: "Joslins", url: "https://clients.mindbodyonline.com/classic/ws?studioid=148871&stype=-7&sView=week&sLoc=0" }, { label: "Alchemy", url: "https://alchemycrossfit.sites.zenplanner.com/" }, { label: "SoBi", url: "https://app.socialbicycles.com/users/sign_in" }, { label: "Presto", url: "https://www.prestocard.ca/en/sign-in" }, { label: "HPL", url: "https://hpl.bibliocommons.com/user/login" }, { label: "Amazon", url: "https://amazon.ca" }, { label: "Costco", url: "https://www.costco.ca/s?langId=-24&keyword=magic" }, { label: "DekuDeals", url: "https://www.dekudeals.com/" }, { label: "OntarioLearn", url: "https://ontariolearn.desire2learn.com/d2l/home" }] },
-        { label: "Media", links: [{ label: "Spotify", url: "https://www.spotify.com/" }, { label: "YouTube", url: "https://youtube.com" }, { label: "Netflix", url: "https://www.netflix.com/WiHome" }, { label: "Prime", url: "https://www.primevideo.com/" }, { label: "Patreon", url: "https://www.patreon.com/settings/memberships" }] },
-        { label: "Work", links: [{ label: "EnviroTel", url: "https://intranet.ec.gc.ca/Phone/Search-Recherche.aspx" }, { label: "GitHub", url: "https://github.com/ramp4-pcar4/" }, { label: "Projects", url: "https://github.com/orgs/ramp4-pcar4/projects/24/views/2" }, { label: "Slack", url: "https://ecccwebmapping.slack.com" }, { label: "Azure", url: "https://portal.azure.com/" }, { label: "MSDN", url: "https://my.visualstudio.com/Downloads" }, { label: "Esri", url: "https://www.esri.com/en-us/my-esri-login" }, { label: "ADO", url: "https://ecollab.ncr.int.ec.gc.ca/projects/ppgu-swpp/Lists/ADO%20Deployment%20Calendar/ADO%20Calendar.aspx" }, { label: "DevOps Repos", url: "https://tfs.int.ec.gc.ca/tfs/DC/BeSD_Geospatial_Data/_versionControl" }, { label: "DevOps Releases", url: "https://tfs.int.ec.gc.ca/tfs/DC/Release/_release?_a=releases&view=all&path=%5CBeSD_Geospatial_Data" }, { label: "MyGCHR", url: "https://mesrhgc-mygchr.spac-pspc.gc.ca/GCHRPRD/signon.html" }, { label: "MyGCPay", url: "https://mapayegc-mygcpay.tpsgc-pwgsc.gc.ca/en/mygcpay" }, { label: "CANChat", url: "https://canchat.gc.ca/" }, { label: "MAPLE", url: "https://maple-dev.np.ec.cloud-nuage.gc.ca/" }] },
-        { label: "Local", links: [{ label: "DIR-X1870", url: "http://192.168.0.1/" }, { label: "Jellyfin", url: "http://192.168.0.154:8096/web" }, { label: "Keep Talking", url: "https://keeptalking.homelinux.net/" }] }
-    ];
+  "use strict";
+  const PROVIDER = "duckduckgo";
+  const INTERNAL = [/\.int\.ec\.gc\.ca$/i, /^intranet\./i, /\.cloud-nuage\.gc\.ca$/i];
+  const ICON_QUEUE = [];
+  const GROUPS = [
+    { label: "Google", links: [{ label: "Search", url: "https://google.ca" }, { label: "Gmail", url: "https://mail.google.com/mail/ca" }, { label: "Calendar", url: "https://calendar.google.com/" }, { label: "Translate", url: "https://translate.google.com/#" }, { label: "Maps", url: "https://maps.google.ca/#", iconHost: "maps.google.com" }, { label: "Drive", url: "https://drive.google.com/" }, { label: "Docs", url: "https://docs.google.com/" }, { label: "Keep", url: "https://drive.google.com/keep", iconHost: "keep.google.com" }, { label: "Chat", url: "https://mail.google.com/chat/u/0/?hl=en-GB#chat/welcome", iconHost: "chat.google.com" }, { label: "Meet", url: "https://meet.google.com/" }] },
+    { label: "Finance", links: [{ label: "TD", url: "https://easyweb.td.com/" }, { label: "Scotiabank", url: "https://secure.scotiabank.com/accounts" }, { label: "Enbridge", url: "https://myaccount.enbridgegas.com/" }, { label: "Alectra", url: "https://myaccount.alectrautilities.com/app/login.jsp" }, { label: "BelairDirect", url: "https://apps.belairdirect.com/cc/?language=en&province=ON" }, { label: "TekSavvy", url: "https://myaccount.teksavvy.com/" }, { label: "Koodo", url: "https://www.koodomobile.com/my-account/overview?INTCMP=KMNew_NavMenu_SelfServe" }, { label: "CanadaLife", url: "https://www.canadalife.com/sign-in.html" }] },
+    { label: "News", links: [{ label: "CNN", url: "https://www.cnn.com" }, { label: "BBC", url: "https://www.bbc.com/news/world" }, { label: "CBC", url: "https://www.cbc.ca/news/" }, { label: "CBC Hamilton", url: "https://www.cbc.ca/hamilton/" }, { label: "The Spec", url: "https://www.pressdisplay.com/pressdisplay/services/urlauthentication.ashx?service=thespecnie.pressreader.com&serviceurl=http://thespecnie.pressreader.com" }, { label: "CTV", url: "https://www.ctvnews.ca/canada" }, { label: "Ottawa Citizen", url: "https://ottawacitizen.com/" }, { label: "Hill Times", url: "https://www.hilltimes.com/" }, { label: "Unrigged", url: "https://www.unrigged.ca/" }, { label: "404 Media", url: "https://www.404media.co/" }, { label: "Weather", url: "https://weather.gc.ca/en/location/index.html?coords=43.258,-79.869" }] },
+    { label: "Social", links: [{ label: "Bluesky", url: "https://bsky.app/" }, { label: "deck.blue", url: "https://deck.blue/" }, { label: "Reddit", url: "https://reddit.com" }, { label: "Discord", url: "https://discordapp.com/channels/@me" }, { label: "HackerNews", url: "https://news.ycombinator.com/" }, { label: "Scryfall", url: "https://scryfall.com/" }, { label: "TappedOut", url: "https://tappedout.net/users/ReasonableMan/mtg-decks/" }, { label: "Moxfield", url: "https://www.moxfield.com/" }] },
+    { label: "Tech", links: [{ label: "Claude", url: "https://claude.ai/new" }, { label: "Gemini", url: "https://gemini.google.com/app" }, { label: "ChatGPT", url: "https://chat.openai.com/" }, { label: "Dreamhost", url: "https://panel.dreamhost.com/" }, { label: "Cloudflare", url: "https://dash.cloudflare.com" }, { label: "DynDNS", url: "https://account.dyn.com/dns/dyndns/" }, { label: "CloudConvert", url: "https://cloudconvert.org/" }, { label: "StackEdit", url: "https://stackedit.io/" }, { label: "Dell (m15)", url: "https://www.dell.com/support/product-details/en-ca/product/alienware-m15-r3-laptop/resources/search" }, { label: "Dell (r16)", url: "https://www.dell.com/support/product-details/en-ca/product/alienware-aurora-r16-desktop/overview" }, { label: "DeepL", url: "https://www.deepl.com/en/translator/l/en/fr" }] },
+    { label: "Life", links: [{ label: "Joslins", url: "https://clients.mindbodyonline.com/classic/ws?studioid=148871&stype=-7&sView=week&sLoc=0" }, { label: "Alchemy", url: "https://alchemycrossfit.sites.zenplanner.com/" }, { label: "SoBi", url: "https://app.socialbicycles.com/users/sign_in" }, { label: "Presto", url: "https://www.prestocard.ca/en/sign-in" }, { label: "HPL", url: "https://hpl.bibliocommons.com/user/login" }, { label: "Amazon", url: "https://amazon.ca" }, { label: "Costco", url: "https://www.costco.ca/s?langId=-24&keyword=magic" }, { label: "DekuDeals", url: "https://www.dekudeals.com/" }, { label: "OntarioLearn", url: "https://ontariolearn.desire2learn.com/d2l/home" }] },
+    { label: "Media", links: [{ label: "Spotify", url: "https://www.spotify.com/" }, { label: "YouTube", url: "https://youtube.com" }, { label: "Netflix", url: "https://www.netflix.com/WiHome" }, { label: "Prime", url: "https://www.primevideo.com/" }, { label: "Patreon", url: "https://www.patreon.com/settings/memberships" }] },
+    { label: "Work", links: [{ label: "EnviroTel", url: "https://intranet.ec.gc.ca/Phone/Search-Recherche.aspx" }, { label: "GitHub", url: "https://github.com/ramp4-pcar4/" }, { label: "Projects", url: "https://github.com/orgs/ramp4-pcar4/projects/24/views/2" }, { label: "Slack", url: "https://ecccwebmapping.slack.com" }, { label: "Azure", url: "https://portal.azure.com/" }, { label: "MSDN", url: "https://my.visualstudio.com/Downloads" }, { label: "Esri", url: "https://www.esri.com/en-us/my-esri-login" }, { label: "ADO", url: "https://ecollab.ncr.int.ec.gc.ca/projects/ppgu-swpp/Lists/ADO%20Deployment%20Calendar/ADO%20Calendar.aspx" }, { label: "DevOps Repos", url: "https://tfs.int.ec.gc.ca/tfs/DC/BeSD_Geospatial_Data/_versionControl" }, { label: "DevOps Releases", url: "https://tfs.int.ec.gc.ca/tfs/DC/Release/_release?_a=releases&view=all&path=%5CBeSD_Geospatial_Data" }, { label: "MyGCHR", url: "https://mesrhgc-mygchr.spac-pspc.gc.ca/GCHRPRD/signon.html" }, { label: "MyGCPay", url: "https://mapayegc-mygcpay.tpsgc-pwgsc.gc.ca/en/mygcpay" }, { label: "CANChat", url: "https://canchat.gc.ca/" }, { label: "MAPLE", url: "https://maple-dev.np.ec.cloud-nuage.gc.ca/" }] },
+    { label: "Local", links: [{ label: "DIR-X1870", url: "http://192.168.0.1/" }, { label: "Jellyfin", url: "http://192.168.0.154:8096/web" }, { label: "Keep Talking", url: "https://keeptalking.homelinux.net/" }] }
+  ];
 </script>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="It's 6 feet of bubble gum, for you, not them.">
-    <title>Start</title>
-    <style>
-        :root {
-            --bg: #1d1d1d;
-            --surface: #151515;
-            --border: #272727;
-            --text: #d8d8d8;
-            --text-dim: #9cdcfe;
-            --accent: #f984b9;
-            --accent-glow: rgba(249, 132, 185, 0.12);
-            --font: "Courier New", Courier, monospace;
-            --radius: 5px;
-            --gap: 0.45rem;
-            --col-gap: 3.5vw;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="It's 6 feet of bubble gum, for you, not them.">
+  <title>Start</title>
+  <style>
+    :root {
+      --bg: #1d1d1d;
+      --surface: #151515;
+      --border: #272727;
+      --text: #d8d8d8;
+      --text-dim: #9cdcfe;
+      --accent: #f984b9;
+      --accent-glow: rgba(249, 132, 185, 0.12);
+      --font: "Courier New", Courier, monospace;
+      --radius: 5px;
+      --gap: 0.45rem;
+      --col-gap: 3.5vw;
+    }
 
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        html {
-            font-size: clamp(16px, 1.2vw, 20px);
-            -webkit-text-size-adjust: 100%;
-        }
+    html {
+      font-size: clamp(16px, 1.2vw, 20px);
+      -webkit-text-size-adjust: 100%;
+    }
 
-        body {
-            min-height: 100vh;
-            padding: clamp(1.2rem, 2.5vw, 3rem) clamp(1rem, 3vw, 3.5rem) 3rem;
-            background: var(--bg);
-            color: var(--text);
-            font: 1rem/1.4 var(--font);
-        }
+    body {
+      min-height: 100vh;
+      padding: clamp(1.2rem, 2.5vw, 3rem) clamp(1rem, 3vw, 3.5rem) 3rem;
+      background: var(--bg);
+      color: var(--text);
+      font: 1rem/1.4 var(--font);
+    }
 
-        header {
-            display: flex;
-            align-items: baseline;
-            gap: 1.2rem;
-            margin-bottom: clamp(1.4rem, 2.5vw, 2.8rem);
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
-        }
+    header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.2rem;
+      margin-bottom: clamp(1.4rem, 2.5vw, 2.8rem);
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
 
-        #clock {
-            font-size: clamp(1.6rem, 3vw, 2.8rem);
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            color: var(--accent);
-            line-height: 1;
-            font-variant-numeric: tabular-nums;
-        }
+    #clock {
+      font-size: clamp(1.6rem, 3vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
 
-        #date {
-            font-size: clamp(0.68rem, 0.75vw, 0.82rem);
-            color: var(--text-dim);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
+    #date {
+      font-size: clamp(0.68rem, 0.75vw, 0.82rem);
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
 
-        #categories {
-            display: flex;
-            gap: var(--col-gap);
-            align-items: flex-start;
-        }
+    #categories {
+      display: flex;
+      gap: var(--col-gap);
+      align-items: flex-start;
+    }
 
-        .col {
-            flex: 1 1 0;
-            display: flex;
-            flex-direction: column;
-            gap: 1.8rem;
-        }
+    .col {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
 
-        .cat-header {
-            display: flex;
-            align-items: center;
-            gap: 0.7rem;
-            margin-bottom: 0.55rem;
-        }
+    .cat-header {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 0.55rem;
+    }
 
-        .cat-label {
-            font-size: 0.7rem;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: var(--text-dim);
-            white-space: nowrap;
-            user-select: none;
-        }
+    .cat-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      white-space: nowrap;
+      user-select: none;
+    }
 
-        .cat-rule {
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
+    .cat-rule {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
 
-        .links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--gap);
-            list-style: none;
-        }
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--gap);
+      list-style: none;
+    }
 
-        .chip,
-        .multi-chip>a {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            padding: 0.28rem 0.62rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            color: var(--text);
-            text-decoration: none;
-            font-family: var(--font);
-            font-size: clamp(0.8rem, 0.85vw, 0.92rem);
-            line-height: 1;
-            transition: color 100ms, border-color 100ms, background 100ms;
-            white-space: nowrap;
-        }
+    .chip,
+    .multi-chip>a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.28rem 0.62rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      text-decoration: none;
+      font-family: var(--font);
+      font-size: clamp(0.8rem, 0.85vw, 0.92rem);
+      line-height: 1;
+      transition: color 100ms, border-color 100ms, background 100ms;
+      white-space: nowrap;
+    }
 
-        .chip:hover,
-        .multi-chip>a:hover {
-            color: var(--accent);
-            border-color: var(--accent);
-            background: var(--accent-glow);
-        }
+    .chip:hover,
+    .multi-chip>a:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-glow);
+    }
 
-        .chip:focus-visible,
-        .multi-chip>a:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
-        }
+    .chip:focus-visible,
+    .multi-chip>a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
 
-        .chip img,
-        .multi-chip__icon img {
-            width: 16px;
-            height: 16px;
-            flex-shrink: 0;
-            display: block;
-        }
+    .chip img,
+    .multi-chip__icon img {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      display: block;
+    }
 
-        .multi-chip {
-            display: inline-flex;
-            align-items: stretch;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow: hidden;
-        }
+    .multi-chip {
+      display: inline-flex;
+      align-items: stretch;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
 
-        .multi-chip__icon {
-            display: flex;
-            align-items: center;
-            padding: 0.28rem 0.48rem;
-            border-right: 1px solid var(--border);
-            pointer-events: none;
-        }
+    .multi-chip__icon {
+      display: flex;
+      align-items: center;
+      padding: 0.28rem 0.48rem;
+      border-right: 1px solid var(--border);
+      pointer-events: none;
+    }
 
-        .multi-chip>a {
-            padding: 0.28rem 0.52rem;
-        }
+    .multi-chip>a {
+      padding: 0.28rem 0.52rem;
+    }
 
-        .multi-chip>a+a {
-            border-left: 1px solid var(--border);
-        }
+    .multi-chip>a+a {
+      border-left: 1px solid var(--border);
+    }
 
-        @media (max-width: 680px) {
-            body {
-                padding: 1.2rem 0.9rem 2rem;
-            }
+    @media (max-width: 680px) {
+      body {
+        padding: 1.2rem 0.9rem 2rem;
+      }
 
-            #clock {
-                font-size: 1.9rem;
-            }
+      #clock {
+        font-size: 1.9rem;
+      }
 
-            #date {
-                font-size: 0.72rem;
-            }
+      #date {
+        font-size: 0.72rem;
+      }
 
-            header {
-                margin-bottom: 1.6rem;
-            }
+      header {
+        margin-bottom: 1.6rem;
+      }
 
-            #categories {
-                flex-direction: column;
-                gap: 1.4rem;
-            }
+      #categories {
+        flex-direction: column;
+        gap: 1.4rem;
+      }
 
-            .col {
-                gap: 1.4rem;
-            }
+      .col {
+        gap: 1.4rem;
+      }
 
-            .chip,
-            .multi-chip>a {
-                font-size: 1rem;
-                padding: 0.42rem 0.75rem;
-            }
+      .chip,
+      .multi-chip>a {
+        font-size: 1rem;
+        padding: 0.42rem 0.75rem;
+      }
 
-            .chip img,
-            .multi-chip__icon img {
-                width: 15px;
-                height: 15px;
-            }
-        }
+      .chip img,
+      .multi-chip__icon img {
+        width: 15px;
+        height: 15px;
+      }
+    }
 
-        @media (prefers-reduced-motion: reduce) {
+    @media (prefers-reduced-motion: reduce) {
 
-            .chip,
-            .multi-chip>a {
-                transition: none;
-            }
-        }
-    </style>
+      .chip,
+      .multi-chip>a {
+        transition: none;
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <div id="root">
-        <header>
-            <div id="clock" aria-live="polite" aria-atomic="true" aria-label="Current time"></div>
-            <div id="date" aria-live="off"></div>
-        </header>
-        <main id="categories" aria-label="Bookmarks">
-            <div class="col" id="col-1"></div>
-            <div class="col" id="col-2"></div>
-        </main>
-    </div>
-    <script>
-        function providerUrl(host) {
-            if (PROVIDER === "duckduckgo") return `https://icons.duckduckgo.com/ip3/${host}.ico`;
-            if (PROVIDER === "direct") return `https://${host}/favicon.ico`;
-            return `https://www.google.com/s2/favicons?domain=${host}&sz=64`;
+  <div id="root">
+    <header>
+      <div id="clock" aria-live="polite" aria-atomic="true" aria-label="Current time"></div>
+      <div id="date" aria-live="off"></div>
+    </header>
+    <main id="categories" aria-label="Bookmarks">
+      <div class="col" id="col-1"></div>
+      <div class="col" id="col-2"></div>
+    </main>
+  </div>
+  <script>
+    function providerUrl(host) {
+      if (PROVIDER === "duckduckgo") return `https://icons.duckduckgo.com/ip3/${host}.ico`;
+      if (PROVIDER === "direct") return `https://${host}/favicon.ico`;
+      return `https://www.google.com/s2/favicons?domain=${host}&sz=64`;
+    }
+
+    function isGoogleHost(host) {
+      return /(^|\.)google\.(com|ca)$/i.test(host);
+    }
+
+    function isPrivateHost(host) {
+      // LAN devices and loopback/mDNS names are unreachable by any external
+      // favicon crawler (DuckDuckGo, Google) — that lookup would 404 every
+      // single time, by definition, no matter how long we wait or how often
+      // we retry. Only a direct fetch has any chance, since the browser
+      // itself is the one sitting on that network.
+      return /^(localhost|127(?:\.\d{1,3}){3}|10(?:\.\d{1,3}){3}|192\.168(?:\.\d{1,3}){2}|172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})$/i.test(host)
+        || /\.local$/i.test(host);
+    }
+
+    function iconTile(hue, glyphInner) {
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">` +
+        `<rect width="16" height="16" rx="3" fill="hsl(${hue},42%,21%)"/>` +
+        glyphInner +
+        `</svg>`;
+      return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+    }
+
+    // Local pictograms for links whose favicon can't be reliably fetched, or
+    // where the real logo isn't something we should reproduce. These are
+    // simple generic symbols (envelope, calendar grid, shield, etc.), not
+    // copies of any product's actual logo — drawn once, locally, so there's
+    // no network call left to fail, get blocked, or go stale.
+    const CUSTOM_GLYPHS = {
+      // Google: s2 proxy 404s on its own internal redirect for these hosts,
+      // direct favicon.ico requests get blocked by tracking protection/ad
+      // blockers, and Google is mid-rollout of a full Workspace icon redesign
+      // as of mid-2026 anyway.
+      Search: [250, '<circle cx="6.2" cy="6.2" r="3.4" fill="none" stroke="hsl(250,72%,77%)" stroke-width="1.6"/><line x1="8.8" y1="8.8" x2="12.4" y2="12.4" stroke="hsl(250,72%,77%)" stroke-width="1.8" stroke-linecap="round"/>'],
+      Gmail: [4, '<rect x="2.3" y="4" width="11.4" height="8" rx="1" fill="none" stroke="hsl(4,72%,77%)" stroke-width="1.3"/><path d="M2.6 4.6l5.4 4 5.4-4" fill="none" stroke="hsl(4,72%,77%)" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/>'],
+      Calendar: [205, '<rect x="2.3" y="3.6" width="11.4" height="9.8" rx="1.2" fill="none" stroke="hsl(205,72%,77%)" stroke-width="1.3"/><line x1="2.3" y1="6.4" x2="13.7" y2="6.4" stroke="hsl(205,72%,77%)" stroke-width="1.3"/><line x1="5.2" y1="2.2" x2="5.2" y2="4.4" stroke="hsl(205,72%,77%)" stroke-width="1.3" stroke-linecap="round"/><line x1="10.8" y1="2.2" x2="10.8" y2="4.4" stroke="hsl(205,72%,77%)" stroke-width="1.3" stroke-linecap="round"/>'],
+      Maps: [140, '<path d="M8 2.6c-2.1 0-3.8 1.6-3.8 3.8 0 2.9 3.8 6.8 3.8 6.8s3.8-3.9 3.8-6.8c0-2.2-1.7-3.8-3.8-3.8z" fill="none" stroke="hsl(140,72%,77%)" stroke-width="1.3"/><circle cx="8" cy="6.4" r="1.3" fill="hsl(140,72%,77%)"/>'],
+      Chat: [170, '<path d="M3 4.4h10a1 1 0 0 1 1 1v4.6a1 1 0 0 1-1 1H7.2l-2.6 2.3v-2.3H3a1 1 0 0 1-1-1V5.4a1 1 0 0 1 1-1z" fill="none" stroke="hsl(170,72%,77%)" stroke-width="1.2"/>'],
+      // Slack: avoids the trademarked pinwheel mark — a channel "#" nods to
+      // Slack's channel concept without reproducing the logo.
+      Slack: [300, '<text x="8" y="8.7" font-family="Courier New,monospace" font-size="12" font-weight="700" fill="hsl(300,72%,77%)" text-anchor="middle" dominant-baseline="central">#</text>'],
+      // MSDN: this link is specifically the Visual Studio subscriber downloads
+      // page, so a download glyph is both generic and literally on-topic —
+      // avoids reproducing Microsoft's four-pane logo.
+      MSDN: [210, '<line x1="8" y1="2.8" x2="8" y2="9" stroke="hsl(210,72%,77%)" stroke-width="1.5" stroke-linecap="round"/><path d="M5.2 6.8L8 9.6l2.8-2.8" fill="none" stroke="hsl(210,72%,77%)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="3.4" y1="12.2" x2="12.6" y2="12.2" stroke="hsl(210,72%,77%)" stroke-width="1.5" stroke-linecap="round"/>'],
+      // BelairDirect: a shield is universal insurance iconography, not their
+      // specific artwork.
+      BelairDirect: [165, '<path d="M8 2.6l4.6 1.7v3.4c0 3-2 5.3-4.6 6.1-2.6-.8-4.6-3.1-4.6-6.1V4.3L8 2.6z" fill="none" stroke="hsl(165,72%,77%)" stroke-width="1.3"/><path d="M6 8l1.4 1.4 2.8-2.8" fill="none" stroke="hsl(165,72%,77%)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>']
+    };
+
+    function monogram(label) {
+      const ch = (String(label).match(/[A-Za-z0-9]/) || ["#"])[0].toUpperCase();
+      let h = 0;
+      for (const c of String(label)) h = (h * 31 + c.charCodeAt(0)) % 360;
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">` +
+        `<rect width="16" height="16" rx="3" fill="hsl(${h},42%,21%)"/>` +
+        `<text x="8" y="8.5" font-family="Courier New,monospace" font-size="11" ` +
+        `font-weight="700" fill="hsl(${h},72%,77%)" text-anchor="middle" ` +
+        `dominant-baseline="central">${ch}</text></svg>`;
+      return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+    }
+
+    function iconChain(url, label, iconHost) {
+      const glyph = CUSTOM_GLYPHS[label];
+      if (glyph) return [iconTile(glyph[0], glyph[1])];
+      let host = "", hostport = "", protocol = "https:";
+      try {
+        const u = new URL(url);
+        host = u.hostname;
+        hostport = u.host;
+        protocol = u.protocol;
+      } catch { }
+      const chain = [];
+      if (host) {
+        if (isPrivateHost(host)) {
+          // Preserve the original scheme/port (LAN devices are often plain
+          // HTTP on non-standard ports) since only a direct fetch is worth
+          // attempting here at all.
+          chain.push(`${protocol}//${hostport}/favicon.ico`);
+        } else if (INTERNAL.some(re => re.test(host))) {
+          chain.push(`https://${host}/favicon.ico`);
+        } else if (isGoogleHost(host)) {
+          // Live favicon discovery for Google hosts not covered by
+          // CUSTOM_GLYPHS — using iconHost when the link's navigation URL
+          // lives inside another product's domain (e.g. Keep at
+          // drive.google.com/keep, Chat at mail.google.com/chat) or a regional
+          // variant (maps.google.ca) — before falling back to the s2 proxy on
+          // the original host (only a distinct attempt when iconHost differs).
+          const brandHost = iconHost || host;
+          chain.push(`https://${brandHost}/favicon.ico`);
+          chain.push(providerUrl(brandHost));
+          if (brandHost !== host) chain.push(providerUrl(host));
+        } else {
+          // Try the site's own favicon.ico first — the original convention
+          // that most ordinary/small/self-hosted sites still populate, and
+          // often more reliable than whether a third-party crawler happened
+          // to index this particular domain. Falls back to the crawler
+          // lookup for sites that only reference their icon via a hashed
+          // <link> path rather than the classic root location.
+          chain.push(`${protocol}//${host}/favicon.ico`);
+          chain.push(providerUrl(host));
         }
+      }
+      chain.push(monogram(label));
+      return chain;
+    }
 
-        function isGoogleHost(host) {
-            return /(^|\.)google\.(com|ca)$/i.test(host);
+    function attachIcon(img, chain) {
+      img.src = chain[chain.length - 1];
+      if (chain.length > 1) ICON_QUEUE.push({ img, chain: chain.slice(0, -1) });
+    }
+
+    function create(tag, props = {}, parent) {
+      const el = document.createElement(tag);
+      Object.entries(props).forEach(([key, value]) => {
+        if (value == null) return;
+        if (key === "className") el.className = value;
+        else if (key === "textContent") el.textContent = value;
+        else el.setAttribute(key, value);
+      });
+      if (parent) parent.appendChild(el);
+      return el;
+    }
+
+    function renderGroup(group, target, autoCol) {
+      const labelId = `cat-${group.label.replace(/\s+/g, "-").toLowerCase()}`;
+      const section = create("section", { className: "category", "aria-labelledby": labelId }, target);
+      const header = create("div", { className: "cat-header", "aria-hidden": "true" }, section);
+      create("span", { className: "cat-label", id: labelId, textContent: group.label }, header);
+      create("div", { className: "cat-rule", role: "presentation" }, header);
+
+      const list = create("ul", { className: "links", role: "list" }, section);
+      group.links.forEach(item => {
+        const li = create("li", {}, list);
+        if (item.links) {
+          const wrap = create("div", { className: "multi-chip", role: "group", "aria-label": item.label }, li);
+          const icon = create("span", { className: "multi-chip__icon", "aria-hidden": "true" }, wrap);
+          const img = create("img", { alt: "" }, icon);
+          const firstUrl = item.links[0] ? item.links[0].url : "";
+          attachIcon(img, iconChain(firstUrl, item.label, item.iconHost || (item.links[0] && item.links[0].iconHost)));
+          item.links.forEach(sub => create("a", { href: sub.url, textContent: sub.label, "aria-label": `${item.label} — ${sub.label}` }, wrap));
+        } else {
+          const link = create("a", { href: item.url, className: "chip" }, li);
+          const img = create("img", { alt: "", "aria-hidden": "true" }, link);
+          attachIcon(img, iconChain(item.url, item.label, item.iconHost));
+          create("span", { textContent: item.label }, link);
         }
+      });
 
-        function iconTile(hue, glyphInner) {
-            const svg =
-                `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">` +
-                `<rect width="16" height="16" rx="3" fill="hsl(${hue},42%,21%)"/>` +
-                glyphInner +
-                `</svg>`;
-            return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-        }
+      return autoCol;
+    }
 
-        // Local pictograms for Google products whose favicon can't be reliably
-        // fetched right now: Google's s2 proxy 404s on its own internal redirect
-        // for these hosts, direct favicon.ico requests get blocked by tracking
-        // protection/ad blockers, and Google is mid-rollout of a full Workspace
-        // icon redesign as of mid-2026 anyway. These are simple generic symbols
-        // (envelope, calendar grid, etc.), not reproductions of Google's logos —
-        // drawn once, locally, so there's no network call left to fail or go stale.
-        const GOOGLE_GLYPHS = {
-            Search: [250, '<circle cx="6.2" cy="6.2" r="3.4" fill="none" stroke="hsl(250,72%,77%)" stroke-width="1.6"/><line x1="8.8" y1="8.8" x2="12.4" y2="12.4" stroke="hsl(250,72%,77%)" stroke-width="1.8" stroke-linecap="round"/>'],
-            Gmail: [4, '<rect x="2.3" y="4" width="11.4" height="8" rx="1" fill="none" stroke="hsl(4,72%,77%)" stroke-width="1.3"/><path d="M2.6 4.6l5.4 4 5.4-4" fill="none" stroke="hsl(4,72%,77%)" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/>'],
-            Calendar: [205, '<rect x="2.3" y="3.6" width="11.4" height="9.8" rx="1.2" fill="none" stroke="hsl(205,72%,77%)" stroke-width="1.3"/><line x1="2.3" y1="6.4" x2="13.7" y2="6.4" stroke="hsl(205,72%,77%)" stroke-width="1.3"/><line x1="5.2" y1="2.2" x2="5.2" y2="4.4" stroke="hsl(205,72%,77%)" stroke-width="1.3" stroke-linecap="round"/><line x1="10.8" y1="2.2" x2="10.8" y2="4.4" stroke="hsl(205,72%,77%)" stroke-width="1.3" stroke-linecap="round"/>'],
-            Maps: [140, '<path d="M8 2.6c-2.1 0-3.8 1.6-3.8 3.8 0 2.9 3.8 6.8 3.8 6.8s3.8-3.9 3.8-6.8c0-2.2-1.7-3.8-3.8-3.8z" fill="none" stroke="hsl(140,72%,77%)" stroke-width="1.3"/><circle cx="8" cy="6.4" r="1.3" fill="hsl(140,72%,77%)"/>'],
-            Chat: [170, '<path d="M3 4.4h10a1 1 0 0 1 1 1v4.6a1 1 0 0 1-1 1H7.2l-2.6 2.3v-2.3H3a1 1 0 0 1-1-1V5.4a1 1 0 0 1 1-1z" fill="none" stroke="hsl(170,72%,77%)" stroke-width="1.2"/>']
-        };
+    function tryLoadChain(img, chain, index) {
+      if (index >= chain.length) return; // exhausted every candidate — leave the original icon as-is
+      const candidate = chain[index];
+      const probe = new Image();
+      probe.onload = () => { img.src = candidate; };
+      probe.onerror = () => { tryLoadChain(img, chain, index + 1); };
+      probe.src = candidate;
+    }
 
-        function monogram(label) {
-            const ch = (String(label).match(/[A-Za-z0-9]/) || ["#"])[0].toUpperCase();
-            let h = 0;
-            for (const c of String(label)) h = (h * 31 + c.charCodeAt(0)) % 360;
-            const svg =
-                `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">` +
-                `<rect width="16" height="16" rx="3" fill="hsl(${h},42%,21%)"/>` +
-                `<text x="8" y="8.5" font-family="Courier New,monospace" font-size="11" ` +
-                `font-weight="700" fill="hsl(${h},72%,77%)" text-anchor="middle" ` +
-                `dominant-baseline="central">${ch}</text></svg>`;
-            return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-        }
+    window.addEventListener("load", () => {
+      let i = 0;
+      const next = () => {
+        if (i >= ICON_QUEUE.length) return;
+        const { img, chain } = ICON_QUEUE[i++];
+        tryLoadChain(img, chain, 0);
+        setTimeout(next, 15);
+      };
+      next();
+    });
 
-        function iconChain(url, label, iconHost) {
-            let host = "";
-            try { host = new URL(url).hostname; } catch { }
-            const chain = [];
-            if (host) {
-                if (INTERNAL.some(re => re.test(host))) {
-                    chain.push(`https://${host}/favicon.ico`);
-                } else if (isGoogleHost(host)) {
-                    const glyph = GOOGLE_GLYPHS[label];
-                    if (glyph) return [iconTile(glyph[0], glyph[1])];
-                    // For Google products not in GOOGLE_GLYPHS, still attempt live
-                    // favicon discovery — using iconHost when the link's navigation URL
-                    // lives inside another product's domain (e.g. Keep at
-                    // drive.google.com/keep, Chat at mail.google.com/chat) or a regional
-                    // variant (maps.google.ca) — before falling back to the s2 proxy.
-                    const brandHost = iconHost || host;
-                    chain.push(`https://${brandHost}/favicon.ico`);
-                    chain.push(`https://icons.duckduckgo.com/ip3/${brandHost}.ico`);
-                    chain.push(providerUrl(host));
-                } else {
-                    chain.push(providerUrl(host));
-                }
-            }
-            chain.push(monogram(label));
-            return chain;
-        }
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, "0");
+      const m = String(now.getMinutes()).padStart(2, "0");
+      const s = String(now.getSeconds()).padStart(2, "0");
+      const clock = document.getElementById("clock");
+      const date = document.getElementById("date");
+      clock.textContent = `${h}:${m}:${s}`;
+      date.textContent = `${now.toLocaleDateString("en-CA", { weekday: "long" })} ${now.toLocaleDateString("en-CA", { month: "long" })} ${now.getDate()}, ${now.getFullYear()}`;
+    }
 
-        function attachIcon(img, chain) {
-            img.src = chain[chain.length - 1];
-            if (chain.length > 1) ICON_QUEUE.push({ img, chain: chain.slice(0, -1) });
-        }
+    updateClock();
+    setInterval(updateClock, 1000);
 
-        function create(tag, props = {}, parent) {
-            const el = document.createElement(tag);
-            Object.entries(props).forEach(([key, value]) => {
-                if (value == null) return;
-                if (key === "className") el.className = value;
-                else if (key === "textContent") el.textContent = value;
-                else el.setAttribute(key, value);
-            });
-            if (parent) parent.appendChild(el);
-            return el;
-        }
+    const col1 = document.getElementById("col-1");
+    const col2 = document.getElementById("col-2");
+    const columns = [col1, col2];
+    let autoCol = 0;
 
-        function renderGroup(group, target, autoCol) {
-            const labelId = `cat-${group.label.replace(/\s+/g, "-").toLowerCase()}`;
-            const section = create("section", { className: "category", "aria-labelledby": labelId }, target);
-            const header = create("div", { className: "cat-header", "aria-hidden": "true" }, section);
-            create("span", { className: "cat-label", id: labelId, textContent: group.label }, header);
-            create("div", { className: "cat-rule", role: "presentation" }, header);
-
-            const list = create("ul", { className: "links", role: "list" }, section);
-            group.links.forEach(item => {
-                const li = create("li", {}, list);
-                if (item.links) {
-                    const wrap = create("div", { className: "multi-chip", role: "group", "aria-label": item.label }, li);
-                    const icon = create("span", { className: "multi-chip__icon", "aria-hidden": "true" }, wrap);
-                    const img = create("img", { alt: "" }, icon);
-                    const firstUrl = item.links[0] ? item.links[0].url : "";
-                    attachIcon(img, iconChain(firstUrl, item.label, item.iconHost || (item.links[0] && item.links[0].iconHost)));
-                    item.links.forEach(sub => create("a", { href: sub.url, textContent: sub.label, "aria-label": `${item.label} — ${sub.label}` }, wrap));
-                } else {
-                    const link = create("a", { href: item.url, className: "chip" }, li);
-                    const img = create("img", { alt: "", "aria-hidden": "true" }, link);
-                    attachIcon(img, iconChain(item.url, item.label, item.iconHost));
-                    create("span", { textContent: item.label }, link);
-                }
-            });
-
-            return autoCol;
-        }
-
-        window.addEventListener("load", () => {
-            let i = 0;
-            const next = () => {
-                if (i >= ICON_QUEUE.length) return;
-                const { img, chain } = ICON_QUEUE[i++];
-                const fallback = img.src;
-                let tries = 0;
-                img.onerror = () => {
-                    if (++tries < chain.length) img.src = chain[tries];
-                    else { img.src = fallback; img.onerror = null; }
-                };
-                img.src = chain[0];
-                setTimeout(next, 15);
-            };
-            next();
-        });
-
-        function updateClock() {
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2, "0");
-            const m = String(now.getMinutes()).padStart(2, "0");
-            const s = String(now.getSeconds()).padStart(2, "0");
-            const clock = document.getElementById("clock");
-            const date = document.getElementById("date");
-            clock.textContent = `${h}:${m}:${s}`;
-            date.textContent = `${now.toLocaleDateString("en-CA", { weekday: "long" })} ${now.toLocaleDateString("en-CA", { month: "long" })} ${now.getDate()}, ${now.getFullYear()}`;
-        }
-
-        updateClock();
-        setInterval(updateClock, 1000);
-
-        const col1 = document.getElementById("col-1");
-        const col2 = document.getElementById("col-2");
-        const columns = [col1, col2];
-        let autoCol = 0;
-
-        GROUPS.forEach(group => {
-            const target = group.col === 1 ? col1 : group.col === 2 ? col2 : columns[autoCol % 2];
-            if (!group.col) autoCol += 1;
-            renderGroup(group, target, autoCol);
-        });
-    </script>
+    GROUPS.forEach(group => {
+      const target = group.col === 1 ? col1 : group.col === 2 ? col2 : columns[autoCol % 2];
+      if (!group.col) autoCol += 1;
+      renderGroup(group, target, autoCol);
+    });
+  </script>
 </body>
-
 </html>
