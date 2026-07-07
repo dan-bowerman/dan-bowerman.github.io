@@ -3,17 +3,18 @@
 <script>
   "use strict";
   const PROVIDER = "duckduckgo";
+  const USE_LIVE_FAVICONS = true;
   const INTERNAL = [/\.int\.ec\.gc\.ca$/i, /^intranet\./i, /\.cloud-nuage\.gc\.ca$/i];
   const ICON_QUEUE = [];
   const GROUPS = [
     { label: "Google", links: [{ label: "Search", url: "https://google.ca" }, { label: "Gmail", url: "https://mail.google.com/mail/ca" }, { label: "Calendar", url: "https://calendar.google.com/" }, { label: "Translate", url: "https://translate.google.com/#" }, { label: "Maps", url: "https://maps.google.ca/#", iconHost: "maps.google.com" }, { label: "Drive", url: "https://drive.google.com/" }, { label: "Docs", url: "https://docs.google.com/" }, { label: "Keep", url: "https://drive.google.com/keep", iconHost: "keep.google.com" }, { label: "Chat", url: "https://mail.google.com/chat/u/0/?hl=en-GB#chat/welcome", iconHost: "chat.google.com" }, { label: "Meet", url: "https://meet.google.com/" }] },
-    { label: "Finance", links: [{ label: "TD", url: "https://easyweb.td.com/" }, { label: "Scotiabank", url: "https://secure.scotiabank.com/accounts" }, { label: "Enbridge", url: "https://myaccount.enbridgegas.com/" }, { label: "Alectra", url: "https://myaccount.alectrautilities.com/app/login.jsp" }, { label: "BelairDirect", url: "https://apps.belairdirect.com/cc/?language=en&province=ON" }, { label: "TekSavvy", url: "https://myaccount.teksavvy.com/" }, { label: "Koodo", url: "https://www.koodomobile.com/my-account/overview?INTCMP=KMNew_NavMenu_SelfServe" }, { label: "CanadaLife", url: "https://www.canadalife.com/sign-in.html" }] },
-    { label: "News", links: [{ label: "CNN", url: "https://www.cnn.com" }, { label: "BBC", url: "https://www.bbc.com/news/world" }, { label: "CBC", url: "https://www.cbc.ca/news/" }, { label: "CBC Hamilton", url: "https://www.cbc.ca/hamilton/" }, { label: "The Spec", url: "https://www.pressdisplay.com/pressdisplay/services/urlauthentication.ashx?service=thespecnie.pressreader.com&serviceurl=http://thespecnie.pressreader.com" }, { label: "CTV", url: "https://www.ctvnews.ca/canada" }, { label: "Ottawa Citizen", url: "https://ottawacitizen.com/" }, { label: "Hill Times", url: "https://www.hilltimes.com/" }, { label: "Unrigged", url: "https://www.unrigged.ca/" }, { label: "404 Media", url: "https://www.404media.co/" }, { label: "Weather", url: "https://weather.gc.ca/en/location/index.html?coords=43.258,-79.869" }] },
+    { label: "Finance", links: [{ label: "TD", url: "https://easyweb.td.com/" }, { label: "Scotiabank", url: "https://secure.scotiabank.com/accounts" }, { label: "Enbridge", url: "https://myaccount.enbridgegas.com/" }, { label: "Alectra", url: "https://myaccount.alectrautilities.com/app/login.jsp", forceMonogram: true }, { label: "BelairDirect", url: "https://apps.belairdirect.com/cc/?language=en&province=ON" }, { label: "TekSavvy", url: "https://myaccount.teksavvy.com/" }, { label: "Koodo", url: "https://www.koodomobile.com/my-account/overview?INTCMP=KMNew_NavMenu_SelfServe" }, { label: "CanadaLife", url: "https://www.canadalife.com/sign-in.html" }] },
+    { label: "News", links: [{ label: "CNN", url: "https://www.cnn.com" }, { label: "BBC", url: "https://www.bbc.com/news/world" }, { label: "CBC", url: "https://www.cbc.ca/news/" }, { label: "CBC Hamilton", url: "https://www.cbc.ca/hamilton/" }, { label: "CTV", url: "https://www.ctvnews.ca/canada" }, { label: "Ottawa Citizen", url: "https://ottawacitizen.com/" }, { label: "Hill Times", url: "https://www.hilltimes.com/" }, { label: "Unrigged", url: "https://www.unrigged.ca/", forceMonogram: true }, { label: "404 Media", url: "https://www.404media.co/" }, { label: "Weather", url: "https://weather.gc.ca/en/location/index.html?coords=43.258,-79.869" }] },
     { label: "Social", links: [{ label: "Bluesky", url: "https://bsky.app/" }, { label: "deck.blue", url: "https://deck.blue/" }, { label: "Reddit", url: "https://reddit.com" }, { label: "Discord", url: "https://discordapp.com/channels/@me" }, { label: "HackerNews", url: "https://news.ycombinator.com/" }, { label: "Scryfall", url: "https://scryfall.com/" }, { label: "TappedOut", url: "https://tappedout.net/users/ReasonableMan/mtg-decks/" }, { label: "Moxfield", url: "https://www.moxfield.com/" }] },
-    { label: "Tech", links: [{ label: "Claude", url: "https://claude.ai/new" }, { label: "Gemini", url: "https://gemini.google.com/app" }, { label: "ChatGPT", url: "https://chat.openai.com/" }, { label: "Dreamhost", url: "https://panel.dreamhost.com/" }, { label: "Cloudflare", url: "https://dash.cloudflare.com" }, { label: "DynDNS", url: "https://account.dyn.com/dns/dyndns/" }, { label: "CloudConvert", url: "https://cloudconvert.org/" }, { label: "StackEdit", url: "https://stackedit.io/" }, { label: "Dell (m15)", url: "https://www.dell.com/support/product-details/en-ca/product/alienware-m15-r3-laptop/resources/search" }, { label: "Dell (r16)", url: "https://www.dell.com/support/product-details/en-ca/product/alienware-aurora-r16-desktop/overview" }, { label: "DeepL", url: "https://www.deepl.com/en/translator/l/en/fr" }] },
-    { label: "Life", links: [{ label: "Joslins", url: "https://clients.mindbodyonline.com/classic/ws?studioid=148871&stype=-7&sView=week&sLoc=0" }, { label: "Alchemy", url: "https://alchemycrossfit.sites.zenplanner.com/" }, { label: "SoBi", url: "https://app.socialbicycles.com/users/sign_in" }, { label: "Presto", url: "https://www.prestocard.ca/en/sign-in" }, { label: "HPL", url: "https://hpl.bibliocommons.com/user/login" }, { label: "Amazon", url: "https://amazon.ca" }, { label: "Costco", url: "https://www.costco.ca/s?langId=-24&keyword=magic" }, { label: "DekuDeals", url: "https://www.dekudeals.com/" }, { label: "OntarioLearn", url: "https://ontariolearn.desire2learn.com/d2l/home" }] },
+    { label: "Tech", links: [{ label: "Claude", url: "https://claude.ai/new" }, { label: "Gemini", url: "https://gemini.google.com/app" }, { label: "ChatGPT", url: "https://chat.openai.com/" }, { label: "Dreamhost", url: "https://panel.dreamhost.com/" }, { label: "Cloudflare", url: "https://dash.cloudflare.com" }, { label: "DynDNS", url: "https://account.dyn.com/dns/dyndns/" }, { label: "CloudConvert", url: "https://cloudconvert.org/" }, { label: "StackEdit", url: "https://stackedit.io/" }, { label: "Dell (m15)", url: "https://www.dell.com/support/product-details/en-ca/product/alienware-m15-r3-laptop/resources/search", forceMonogram: true }, { label: "Dell (r16)", url: "https://www.dell.com/support/product-details/en-ca/product/alienware-aurora-r16-desktop/overview" }, { label: "DeepL", url: "https://www.deepl.com/en/translator/l/en/fr" }] },
+    { label: "Life", links: [{ label: "Joslins", url: "https://clients.mindbodyonline.com/classic/ws?studioid=148871&stype=-7&sView=week&sLoc=0" }, { label: "Alchemy", url: "https://alchemycrossfit.sites.zenplanner.com/" }, { label: "SoBi", url: "https://app.socialbicycles.com/users/sign_in" }, { label: "Presto", url: "https://www.prestocard.ca/en/sign-in", forceMonogram: true }, { label: "HPL", url: "https://hpl.bibliocommons.com/user/login" }, { label: "Amazon", url: "https://amazon.ca" }, { label: "Costco", url: "https://www.costco.ca/s?langId=-24&keyword=magic" }, { label: "DekuDeals", url: "https://www.dekudeals.com/" }, { label: "OntarioLearn", url: "https://ontariolearn.desire2learn.com/d2l/home", forceMonogram: true }] },
     { label: "Media", links: [{ label: "Spotify", url: "https://www.spotify.com/" }, { label: "YouTube", url: "https://youtube.com" }, { label: "Netflix", url: "https://www.netflix.com/WiHome" }, { label: "Prime", url: "https://www.primevideo.com/" }, { label: "Patreon", url: "https://www.patreon.com/settings/memberships" }] },
-    { label: "Work", links: [{ label: "EnviroTel", url: "https://intranet.ec.gc.ca/Phone/Search-Recherche.aspx" }, { label: "GitHub", url: "https://github.com/ramp4-pcar4/" }, { label: "Projects", url: "https://github.com/orgs/ramp4-pcar4/projects/24/views/2" }, { label: "Slack", url: "https://ecccwebmapping.slack.com" }, { label: "Azure", url: "https://portal.azure.com/" }, { label: "MSDN", url: "https://my.visualstudio.com/Downloads" }, { label: "Esri", url: "https://www.esri.com/en-us/my-esri-login" }, { label: "ADO", url: "https://ecollab.ncr.int.ec.gc.ca/projects/ppgu-swpp/Lists/ADO%20Deployment%20Calendar/ADO%20Calendar.aspx" }, { label: "DevOps Repos", url: "https://tfs.int.ec.gc.ca/tfs/DC/BeSD_Geospatial_Data/_versionControl" }, { label: "DevOps Releases", url: "https://tfs.int.ec.gc.ca/tfs/DC/Release/_release?_a=releases&view=all&path=%5CBeSD_Geospatial_Data" }, { label: "MyGCHR", url: "https://mesrhgc-mygchr.spac-pspc.gc.ca/GCHRPRD/signon.html" }, { label: "MyGCPay", url: "https://mapayegc-mygcpay.tpsgc-pwgsc.gc.ca/en/mygcpay" }, { label: "CANChat", url: "https://canchat.gc.ca/" }, { label: "MAPLE", url: "https://maple-dev.np.ec.cloud-nuage.gc.ca/" }] },
+    { label: "Work", links: [{ label: "EnviroTel", url: "https://intranet.ec.gc.ca/Phone/Search-Recherche.aspx" }, { label: "GitHub", url: "https://github.com/ramp4-pcar4/" }, { label: "Projects", url: "https://github.com/orgs/ramp4-pcar4/projects/24/views/2" }, { label: "Slack", url: "https://ecccwebmapping.slack.com" }, { label: "Azure", url: "https://portal.azure.com/" }, { label: "MSDN", url: "https://my.visualstudio.com/Downloads" }, { label: "Esri", url: "https://www.esri.com/en-us/my-esri-login" }, { label: "ADO", url: "https://ecollab.ncr.int.ec.gc.ca/projects/ppgu-swpp/Lists/ADO%20Deployment%20Calendar/ADO%20Calendar.aspx" }, { label: "DevOps Repos", url: "https://tfs.int.ec.gc.ca/tfs/DC/BeSD_Geospatial_Data/_versionControl" }, { label: "DevOps Releases", url: "https://tfs.int.ec.gc.ca/tfs/DC/Release/_release?_a=releases&view=all&path=%5CBeSD_Geospatial_Data" }, { label: "MyGCHR", url: "https://mesrhgc-mygchr.spac-pspc.gc.ca/GCHRPRD/signon.html", forceMonogram: true }, { label: "MyGCPay", url: "https://mapayegc-mygcpay.tpsgc-pwgsc.gc.ca/en/mygcpay", forceMonogram: true }, { label: "CANChat", url: "https://canchat.gc.ca/", forceMonogram: true }, { label: "MAPLE", url: "https://maple-dev.np.ec.cloud-nuage.gc.ca/" }] },
     { label: "Local", links: [{ label: "DIR-X1870", url: "http://192.168.0.1/" }, { label: "Jellyfin", url: "http://192.168.0.154:8096/web" }, { label: "Keep Talking", url: "https://keeptalking.homelinux.net/" }] }
   ];
 </script>
@@ -26,12 +27,12 @@
   <style>
     :root {
       --bg: #1d1d1d;
-      --surface: #151515;
+      --surface: #14283b;
       --border: #272727;
-      --text: #d8d8d8;
+      --text: #9cdcfe;
       --text-dim: #9cdcfe;
       --accent: #f984b9;
-      --accent-glow: rgba(249, 132, 185, 0.12);
+      --accent-glow: rgba(238, 63, 142, 0.12);
       --font: "Courier New", Courier, monospace;
       --radius: 5px;
       --gap: 0.45rem;
@@ -320,9 +321,10 @@
       return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
     }
 
-    function iconChain(url, label, iconHost) {
+    function iconChain(url, label, iconHost, forceMonogram) {
       const glyph = CUSTOM_GLYPHS[label];
       if (glyph) return [iconTile(glyph[0], glyph[1])];
+      if (forceMonogram || !USE_LIVE_FAVICONS) return [monogram(label)];
       let host = "", hostport = "", protocol = "https:";
       try {
         const u = new URL(url);
@@ -397,12 +399,12 @@
           const icon = create("span", { className: "multi-chip__icon", "aria-hidden": "true" }, wrap);
           const img = create("img", { alt: "" }, icon);
           const firstUrl = item.links[0] ? item.links[0].url : "";
-          attachIcon(img, iconChain(firstUrl, item.label, item.iconHost || (item.links[0] && item.links[0].iconHost)));
+          attachIcon(img, iconChain(firstUrl, item.label, item.iconHost || (item.links[0] && item.links[0].iconHost), item.forceMonogram));
           item.links.forEach(sub => create("a", { href: sub.url, textContent: sub.label, "aria-label": `${item.label} — ${sub.label}` }, wrap));
         } else {
           const link = create("a", { href: item.url, className: "chip" }, li);
           const img = create("img", { alt: "", "aria-hidden": "true" }, link);
-          attachIcon(img, iconChain(item.url, item.label, item.iconHost));
+          attachIcon(img, iconChain(item.url, item.label, item.iconHost, item.forceMonogram));
           create("span", { textContent: item.label }, link);
         }
       });
@@ -456,4 +458,5 @@
     });
   </script>
 </body>
+
 </html>
